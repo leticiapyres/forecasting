@@ -6,9 +6,9 @@ import numpy as np
 from joblib import Parallel
 import json
 
-import localpath
-from benchmark_paths import BENCHMARK_DATA_DIR, SUBMISSIONS_DIR
-from utils import get_month_day_range, train, predict, split_train_validation
+import localpath_tmp
+from benchmark_paths_tmp import BENCHMARK_DATA_DIR, SUBMISSIONS_DIR
+from utils_tmp import get_month_day_range, train, predict, split_train_validation
 
 
 def pinball_loss(predictions, actuals, q):
@@ -37,13 +37,24 @@ QUANTILES = np.linspace(0.1, 0.9, 9)
 QUANT_REG_MAX_ITER = 2000
 DATETIME_COL = 'Datetime'
 TARGET_COL = 'DEMAND'
-# FEATURE_COLS = ['Holiday', 'DayType', 'Hour', 'TimeOfYear', 'WeekOfYear',
-#                 'CurrentYear', 'annual_sin_1', 'annual_cos_1',
-#                 'annual_sin_2', 'annual_cos_2', 'annual_sin_3',
-#                 'annual_cos_3', 'weekly_sin_1', 'weekly_cos_1',
-#                 'weekly_sin_2', 'weekly_cos_2', 'weekly_sin_3',
-#                 'weekly_cos_3', 'daily_sin_1', 'daily_cos_1', 'daily_sin_2',
-#                 'daily_cos_2', 'LoadLag', 'DewPntLag', 'DryBulbLag']
+
+# FEATURE_COLS = ['Holiday', 'DayType', 'TimeOfYear', 'WeekOfYear',
+#                 'CurrentYear', 'LoadLag', 'DewPntLag', 'DryBulbLag',
+#                 'CurrentDate',
+#                 'annual_sin_1', 'annual_cos_1', 'annual_sin_2',
+#                 'annual_cos_2', 'annual_sin_3', 'annual_cos_3',
+#                 'weekly_sin_1', 'weekly_cos_1', 'weekly_sin_2',
+#                 'weekly_cos_2', 'weekly_sin_3', 'weekly_cos_3',
+#                 'RecentLoad_9', 'RecentLoad_10', 'RecentLoad_11',
+#                 'RecentLoad_12', 'RecentLoad_13', 'RecentLoad_14',
+#                 'RecentLoad_15', 'RecentLoad_16',
+#                 'RecentDryBulb_9', 'RecentDryBulb_10', 'RecentDryBulb_11',
+#                 'RecentDryBulb_12', 'RecentDryBulb_13', 'RecentDryBulb_14',
+#                 'RecentDryBulb_15', 'RecentDryBulb_16',
+#                 'RecentDewPnt_9', 'RecentDewPnt_10', 'RecentDewPnt_11',
+#                 'RecentDewPnt_12', 'RecentDewPnt_13', 'RecentDewPnt_14',
+#                 'RecentDewPnt_15', 'RecentDewPnt_16',
+#                 ]
 
 FEATURE_COLS = ['Holiday', 'DayType', 'TimeOfYear', 'WeekOfYear',
                 'CurrentYear', 'LoadLag', 'DewPntLag', 'DryBulbLag',
@@ -51,13 +62,16 @@ FEATURE_COLS = ['Holiday', 'DayType', 'TimeOfYear', 'WeekOfYear',
                 'annual_sin_1', 'annual_cos_1', 'annual_sin_2',
                 'annual_cos_2', 'annual_sin_3', 'annual_cos_3',
                 'weekly_sin_1', 'weekly_cos_1', 'weekly_sin_2',
-                'weekly_cos_2', 'weekly_sin_3', 'weekly_cos_3'
+                'weekly_cos_2', 'weekly_sin_3', 'weekly_cos_3',
+                'RecentLoad_9', 'RecentLoad_10', 'RecentLoad_11',
+                'RecentLoad_12', 'RecentLoad_13', 'RecentLoad_14',
+                'RecentLoad_15', 'RecentLoad_16'
                 ]
 
 
 # Data paths
 TRAIN_DATA_DIR = os.path.join(BENCHMARK_DATA_DIR, 'features', 'train')
-TRAIN_DATA_FILE = os.path.join(TRAIN_DATA_DIR, 'train_base.csv')
+TRAIN_DATA_FILE = os.path.join(TRAIN_DATA_DIR, 'train_round_1.csv')
 
 RUN_NUM = 11
 RUN_COMMENT = 'Added time trend'
@@ -100,6 +114,9 @@ def main():
             print('Round {0} max timestamp of training data: {1}'.format(i_round, max(train_df[DATETIME_COL])))
             print('Round {0} min timestamp of validation data: {1}'.format(i_round, min(validation_df[DATETIME_COL])))
             print('Round {0} max timestamp of validation data: {1}'.format(i_round, max(validation_df[DATETIME_COL])))
+
+            validation_month = validation_df['MonthOfYear'].values[0]
+            train_df = train_df.loc[train_df['MonthOfYear'] == validation_month, ].copy()
 
             models_all = train(train_df, parallel, config)
             predictions_df = predict(validation_df, models_all, config)
