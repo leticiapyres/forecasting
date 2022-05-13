@@ -1,3 +1,5 @@
+#!/bin/bash -eu
+
 # Copyright (c) Microsoft Corporation.
 # Licensed under the MIT License. 
 
