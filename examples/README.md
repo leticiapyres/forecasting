@@ -12,5 +12,5 @@ The following table summarizes each forecasting scenario contained in the reposi
 | Directory                        | Content                                                        | Description                                                                                                                                          |
 |----------------------------------|----------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------|
 | [grocery_sales](./grocery_sales) | [python/](./grocery_sales/python) <br> [R/](./grocery_sales/R) | Python and R examples for forecasting sales of orange juice in [Dominick's dataset](https://www.chicagobooth.edu/research/kilts/datasets/dominicks). |
-
+| [retail_turnover](./retail_turnover) | (R only) | An introduction to forecasting with the Tidyverts framework, using monthly Australian retail turnover by state and industry code. The dataset is one of many included in the [tsibbledata](https://cran.r-project.org/package=tsibbledata) package of example time series datasets. |
 
