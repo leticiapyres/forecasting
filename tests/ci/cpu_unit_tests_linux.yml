@@ -41,7 +41,8 @@ jobs:
       yes | conda env create -n forecasting_env -f tools/environment.yml
       eval "$(conda shell.bash hook)" && conda activate forecasting_env
       pip install -e fclib
-      pip install ray>=0.8.2
+      pip install "ray>=0.8.2"
+      pip install pytest-cov
       echo "Conda env installed."
     displayName: 'Creating Conda Environment with dependencies'
 
@@ -49,8 +50,19 @@ jobs:
       sudo ln -sf /usr/lib/R/modules/lapack.so /usr/lib/libRlapack.so
       eval "$(conda shell.bash hook)" && conda activate forecasting_env
       python -m ipykernel install --user --name forecasting_env
-      pytest --durations=0 fclib/tests -m "not notebooks and not gpu and not azureml" --junitxml=junit/test-unitttest.xml
+      pytest --durations=0 fclib/tests -m "not notebooks and not gpu and not azureml" --junitxml=junit/test-unitttest.xml --cov=fclib --cov-report=xml
     displayName: 'Run Unit tests'
+
+  # required for Cobertura
+  - task: UseDotNet@2
+    displayName: 'Use .NET Core sdk'
+    inputs:
+      version: 2.x
+
+  - task: PublishCodeCoverageResults@1
+    inputs:
+      codeCoverageTool: Cobertura
+      summaryFileLocation: '$(System.DefaultWorkingDirectory)/**/coverage.xml'
 
   - task: PublishTestResults@2
     inputs:
